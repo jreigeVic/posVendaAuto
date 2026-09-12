@@ -1,0 +1,37 @@
+{
+  "info": {
+    "name": "posVendaAuto - Software principal",
+    "description": "Coleção de testes das rotas do software principal. Ver docs/contratos-api.md.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:8080" },
+    { "key": "veiculoId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Cadastrar veiculo",
+      "request": {
+        "method": "POST",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "url": "{{baseUrl}}/veiculos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"marca\": \"Fiat\",\n  \"modelo\": \"Argo\",\n  \"ano\": 2022,\n  \"cor\": \"Prata\",\n  \"preco\": 78900.00,\n  \"estadoConservacao\": \"SEMINOVO\"\n}"
+        }
+      }
+    },
+    {
+      "name": "Editar veiculo",
+      "request": {
+        "method": "PUT",
+        "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "url": "{{baseUrl}}/veiculos/{{veiculoId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"marca\": \"Fiat\",\n  \"modelo\": \"Argo\",\n  \"ano\": 2022,\n  \"cor\": \"Branco\",\n  \"preco\": 76900.00,\n  \"estadoConservacao\": \"SEMINOVO\"\n}"
+        }
+      }
+    }
+  ]
+}

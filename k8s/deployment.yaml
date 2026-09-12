@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: software-principal
+  namespace: posvenda
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: software-principal
+  template:
+    metadata:
+      labels:
+        app: software-principal
+    spec:
+      containers:
+        - name: software-principal
+          image: ghcr.io/jreigevic/posvendaauto:latest
+          ports:
+            - containerPort: 8080
+          env:
+            - name: DB_HOST
+              value: postgres.posvenda.svc.cluster.local
+            - name: DB_PORT
+              value: "5432"
+            - name: DB_NAME
+              value: posvenda_principal_db
+            - name: DB_USER
+              value: postgres
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: posvenda-secrets
+                  key: db-password
+            - name: VENDA_VEICULOS_SERVICE_URL
+              value: http://venda-veiculos-service.venda-veiculos.svc.cluster.local:8081
+            - name: INTERNAL_TOKEN
+              valueFrom:
+                secretKeyRef:
+                  name: posvenda-secrets
+                  key: internal-token
+            - name: OPERADOR_SENHA
+              valueFrom:
+                secretKeyRef:
+                  name: posvenda-secrets
+                  key: operador-senha
+          readinessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 15
+          livenessProbe:
+            httpGet:
+              path: /actuator/health
+              port: 8080
+            initialDelaySeconds: 30
