@@ -25,7 +25,10 @@ jobs:
 
       - name: Definir nome da imagem
         id: vars
-        run: echo "image=ghcr.io/${{ github.repository_owner }}/posvendaauto:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+        run: |
+          owner=$(echo "${{ github.repository_owner }}" | tr '[:upper:]' '[:lower:]')
+          echo "image=ghcr.io/${owner}/posvendaauto:${{ github.sha }}" >> "$GITHUB_OUTPUT"
+          echo "image_latest=ghcr.io/${owner}/posvendaauto:latest" >> "$GITHUB_OUTPUT"
 
       - name: Build e push da imagem
         uses: docker/build-push-action@v6
@@ -34,7 +37,7 @@ jobs:
           push: true
           tags: |
             ${{ steps.vars.outputs.image }}
-            ghcr.io/${{ github.repository_owner }}/posvendaauto:latest
+            ${{ steps.vars.outputs.image_latest }}
 
   deploy-local-kind:
     needs: build-and-push-image
