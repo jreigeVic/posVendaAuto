@@ -1,0 +1,122 @@
+openapi: 3.0.3
+info:
+  title: posVendaAuto — Software principal
+  description: >
+    Cadastro e edição de veículos. Ver docs/contratos-api.md e docs/arquitetura.md para o
+    contexto completo da solução (dois serviços, comunicação via HTTP).
+  version: "0.1.0"
+servers:
+  - url: http://localhost:8080
+    description: Ambiente local
+
+tags:
+  - name: veiculos
+    description: Cadastro e edição de veículos
+
+paths:
+  /veiculos:
+    post:
+      tags: [veiculos]
+      summary: Cadastrar veículo
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VeiculoRequest"
+      responses:
+        "201":
+          description: Veículo cadastrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VeiculoResponse"
+        "400":
+          description: Requisição inválida
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroResponse"
+
+  /veiculos/{id}:
+    put:
+      tags: [veiculos]
+      summary: Editar veículo
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: string
+            format: uuid
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/VeiculoRequest"
+      responses:
+        "200":
+          description: Veículo atualizado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/VeiculoResponse"
+        "404":
+          description: Veículo não encontrado
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/ErroResponse"
+
+components:
+  schemas:
+    VeiculoRequest:
+      type: object
+      required: [marca, modelo, ano, cor, preco, estadoConservacao]
+      properties:
+        marca:
+          type: string
+          example: Fiat
+        modelo:
+          type: string
+          example: Argo
+        ano:
+          type: integer
+          example: 2022
+        cor:
+          type: string
+          example: Prata
+        preco:
+          type: number
+          format: double
+          example: 78900.00
+        estadoConservacao:
+          type: string
+          enum: [NOVO, SEMINOVO, USADO]
+          example: SEMINOVO
+
+    VeiculoResponse:
+      allOf:
+        - $ref: "#/components/schemas/VeiculoRequest"
+        - type: object
+          properties:
+            id:
+              type: string
+              format: uuid
+            criadoEm:
+              type: string
+              format: date-time
+            atualizadoEm:
+              type: string
+              format: date-time
+
+    ErroResponse:
+      type: object
+      properties:
+        mensagem:
+          type: string
+        campos:
+          type: object
+          additionalProperties:
+            type: string
