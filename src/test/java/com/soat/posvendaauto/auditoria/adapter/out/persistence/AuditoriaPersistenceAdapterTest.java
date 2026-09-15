@@ -1,4 +1,4 @@
-package com.soat.posvendaauto.auditoria;
+package com.soat.posvendaauto.auditoria.adapter.out.persistence;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -12,31 +12,31 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
 
 @ExtendWith(MockitoExtension.class)
-class AuditoriaServiceTest {
+class AuditoriaPersistenceAdapterTest {
 
     @Mock
-    private LogAuditoriaRepository repository;
+    private SpringDataLogAuditoriaRepository repository;
 
     @Test
     void deveRegistrarSucesso() {
-        AuditoriaService service = new AuditoriaService(repository);
+        AuditoriaPersistenceAdapter adapter = new AuditoriaPersistenceAdapter(repository);
         UUID id = UUID.randomUUID();
 
-        service.registrarSucesso("OPERACAO_X", id, "detalhe");
+        adapter.registrarSucesso("OPERACAO_X", id, "detalhe");
 
-        ArgumentCaptor<LogAuditoria> captor = ArgumentCaptor.forClass(LogAuditoria.class);
+        ArgumentCaptor<LogAuditoriaJpaEntity> captor = ArgumentCaptor.forClass(LogAuditoriaJpaEntity.class);
         verify(repository).save(captor.capture());
         assertThat(captor.getValue().getResultado()).isEqualTo(Resultado.SUCESSO);
     }
 
     @Test
     void deveRegistrarErro() {
-        AuditoriaService service = new AuditoriaService(repository);
+        AuditoriaPersistenceAdapter adapter = new AuditoriaPersistenceAdapter(repository);
         UUID id = UUID.randomUUID();
 
-        service.registrarErro("OPERACAO_Y", id, "falhou");
+        adapter.registrarErro("OPERACAO_Y", id, "falhou");
 
-        ArgumentCaptor<LogAuditoria> captor = ArgumentCaptor.forClass(LogAuditoria.class);
+        ArgumentCaptor<LogAuditoriaJpaEntity> captor = ArgumentCaptor.forClass(LogAuditoriaJpaEntity.class);
         verify(repository).save(captor.capture());
         assertThat(captor.getValue().getResultado()).isEqualTo(Resultado.ERRO);
     }

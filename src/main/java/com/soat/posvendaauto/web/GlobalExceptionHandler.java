@@ -1,7 +1,7 @@
 package com.soat.posvendaauto.web;
 
-import com.soat.posvendaauto.auditoria.AuditoriaService;
-import com.soat.posvendaauto.veiculo.VeiculoNaoEncontradoException;
+import com.soat.posvendaauto.auditoria.application.port.out.AuditoriaPort;
+import com.soat.posvendaauto.veiculo.application.VeiculoNaoEncontradoException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
@@ -11,9 +11,9 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
-    private final AuditoriaService auditoriaService;
+    private final AuditoriaPort auditoriaService;
 
-    public GlobalExceptionHandler(AuditoriaService auditoriaService) {
+    public GlobalExceptionHandler(AuditoriaPort auditoriaService) {
         this.auditoriaService = auditoriaService;
     }
 
