@@ -1,6 +1,8 @@
-package com.soat.posvendaauto.sincronizacao;
+package com.soat.posvendaauto.sincronizacao.adapter.out.http;
 
-import com.soat.posvendaauto.veiculo.EstadoConservacao;
+import com.soat.posvendaauto.sincronizacao.application.port.out.VeiculoSyncPayload;
+import com.soat.posvendaauto.sincronizacao.domain.TipoEvento;
+import com.soat.posvendaauto.veiculo.domain.EstadoConservacao;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
@@ -16,7 +18,7 @@ import static org.springframework.test.web.client.match.MockRestRequestMatchers.
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withServerError;
 import static org.springframework.test.web.client.response.MockRestResponseCreators.withSuccess;
 
-class VendaVeiculosClientTest {
+class HttpVendaVeiculosAdapterTest {
 
     private final VeiculoSyncPayload payload = new VeiculoSyncPayload(
             UUID.randomUUID(), "Fiat", "Argo", 2022, "Prata", BigDecimal.valueOf(78900), EstadoConservacao.SEMINOVO);
@@ -30,9 +32,9 @@ class VendaVeiculosClientTest {
                 .andExpect(header("X-Internal-Token", "token-teste"))
                 .andRespond(withSuccess().contentType(MediaType.APPLICATION_JSON));
 
-        VendaVeiculosClient client = new VendaVeiculosClient(builder.build(), "token-teste");
+        HttpVendaVeiculosAdapter adapter = new HttpVendaVeiculosAdapter(builder.build(), "token-teste");
 
-        boolean resultado = client.sincronizar(TipoEvento.VEICULO_CRIADO, payload.id(), payload);
+        boolean resultado = adapter.sincronizar(TipoEvento.VEICULO_CRIADO, payload.id(), payload);
 
         assertThat(resultado).isTrue();
         server.verify();
@@ -46,9 +48,9 @@ class VendaVeiculosClientTest {
                 .andExpect(method(org.springframework.http.HttpMethod.PUT))
                 .andRespond(withServerError());
 
-        VendaVeiculosClient client = new VendaVeiculosClient(builder.build(), "token-teste");
+        HttpVendaVeiculosAdapter adapter = new HttpVendaVeiculosAdapter(builder.build(), "token-teste");
 
-        boolean resultado = client.sincronizar(TipoEvento.VEICULO_ATUALIZADO, payload.id(), payload);
+        boolean resultado = adapter.sincronizar(TipoEvento.VEICULO_ATUALIZADO, payload.id(), payload);
 
         assertThat(resultado).isFalse();
     }

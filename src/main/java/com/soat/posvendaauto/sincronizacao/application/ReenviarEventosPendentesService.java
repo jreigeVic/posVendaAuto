@@ -1,8 +1,13 @@
-package com.soat.posvendaauto.sincronizacao;
+package com.soat.posvendaauto.sincronizacao.application;
 
-import com.soat.posvendaauto.auditoria.AuditoriaService;
-import org.springframework.scheduling.annotation.Scheduled;
-import org.springframework.stereotype.Component;
+import com.soat.posvendaauto.auditoria.application.port.out.AuditoriaPort;
+import com.soat.posvendaauto.sincronizacao.application.port.in.ReenviarEventosPendentesUseCase;
+import com.soat.posvendaauto.sincronizacao.application.port.out.EventoSincronizacaoRepositoryPort;
+import com.soat.posvendaauto.sincronizacao.application.port.out.VeiculoSyncPayload;
+import com.soat.posvendaauto.sincronizacao.application.port.out.VendaVeiculosSyncPort;
+import com.soat.posvendaauto.sincronizacao.domain.EventoSincronizacao;
+import com.soat.posvendaauto.sincronizacao.domain.StatusEvento;
+import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import tools.jackson.databind.ObjectMapper;
 
@@ -10,26 +15,26 @@ import java.time.Duration;
 import java.time.Instant;
 import java.util.List;
 
-@Component
-public class SincronizacaoJob {
+@Service
+public class ReenviarEventosPendentesService implements ReenviarEventosPendentesUseCase {
 
     private static final int MAX_TENTATIVAS = 10;
     private static final Duration BACKOFF_BASE = Duration.ofSeconds(5);
 
-    private final EventoSincronizacaoRepository repository;
-    private final VendaVeiculosClient client;
-    private final AuditoriaService auditoriaService;
+    private final EventoSincronizacaoRepositoryPort repository;
+    private final VendaVeiculosSyncPort client;
+    private final AuditoriaPort auditoriaService;
     private final ObjectMapper objectMapper;
 
-    public SincronizacaoJob(EventoSincronizacaoRepository repository, VendaVeiculosClient client,
-                             AuditoriaService auditoriaService, ObjectMapper objectMapper) {
+    public ReenviarEventosPendentesService(EventoSincronizacaoRepositoryPort repository, VendaVeiculosSyncPort client,
+                                            AuditoriaPort auditoriaService, ObjectMapper objectMapper) {
         this.repository = repository;
         this.client = client;
         this.auditoriaService = auditoriaService;
         this.objectMapper = objectMapper;
     }
 
-    @Scheduled(fixedDelayString = "${sincronizacao.job.intervalo-ms:5000}")
+    @Override
     @Transactional
     public void reenviarPendentes() {
         List<EventoSincronizacao> pendentes = repository.findByStatusAndProximaTentativaEmLessThanEqual(StatusEvento.PENDENTE, Instant.now());

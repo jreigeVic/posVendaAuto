@@ -1,7 +1,7 @@
-package com.soat.posvendaauto.sincronizacao;
+package com.soat.posvendaauto.sincronizacao.application.port.out;
 
-import com.soat.posvendaauto.veiculo.EstadoConservacao;
-import com.soat.posvendaauto.veiculo.Veiculo;
+import com.soat.posvendaauto.veiculo.domain.EstadoConservacao;
+import com.soat.posvendaauto.veiculo.domain.Veiculo;
 
 import java.math.BigDecimal;
 import java.util.UUID;

@@ -1,4 +1,4 @@
-package com.soat.posvendaauto.sincronizacao;
+package com.soat.posvendaauto.sincronizacao.domain;
 
 public enum TipoEvento {
     VEICULO_CRIADO,

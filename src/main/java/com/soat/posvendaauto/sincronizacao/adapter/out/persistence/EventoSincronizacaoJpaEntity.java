@@ -1,5 +1,7 @@
-package com.soat.posvendaauto.sincronizacao;
+package com.soat.posvendaauto.sincronizacao.adapter.out.persistence;
 
+import com.soat.posvendaauto.sincronizacao.domain.StatusEvento;
+import com.soat.posvendaauto.sincronizacao.domain.TipoEvento;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -22,7 +24,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class EventoSincronizacao {
+public class EventoSincronizacaoJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -46,20 +48,4 @@ public class EventoSincronizacao {
     private Instant criadoEm;
 
     private Instant atualizadoEm;
-
-    public static EventoSincronizacao criar(UUID veiculoId, TipoEvento tipoEvento, String payloadJson) {
-        Instant agora = Instant.now();
-        return new EventoSincronizacao(null, veiculoId, tipoEvento, payloadJson, StatusEvento.PENDENTE, 0, agora, agora, agora);
-    }
-
-    public void marcarEntregue() {
-        this.status = StatusEvento.ENTREGUE;
-        this.atualizadoEm = Instant.now();
-    }
-
-    public void registrarFalha(java.time.Duration backoff) {
-        this.tentativas++;
-        this.proximaTentativaEm = Instant.now().plus(backoff);
-        this.atualizadoEm = Instant.now();
-    }
 }
