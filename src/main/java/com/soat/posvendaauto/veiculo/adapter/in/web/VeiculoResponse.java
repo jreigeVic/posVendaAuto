@@ -1,4 +1,7 @@
-package com.soat.posvendaauto.veiculo;
+package com.soat.posvendaauto.veiculo.adapter.in.web;
+
+import com.soat.posvendaauto.veiculo.domain.EstadoConservacao;
+import com.soat.posvendaauto.veiculo.domain.Veiculo;
 
 import java.math.BigDecimal;
 import java.time.Instant;

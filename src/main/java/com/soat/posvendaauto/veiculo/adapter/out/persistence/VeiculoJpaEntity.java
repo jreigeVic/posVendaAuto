@@ -1,4 +1,4 @@
-package com.soat.posvendaauto.veiculo;
+package com.soat.posvendaauto.veiculo.adapter.out.persistence;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -7,6 +7,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
+import com.soat.posvendaauto.veiculo.domain.EstadoConservacao;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -22,7 +23,7 @@ import java.util.UUID;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Veiculo {
+public class VeiculoJpaEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
