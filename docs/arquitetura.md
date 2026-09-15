@@ -87,6 +87,18 @@ Responsabilidades:
 6. Se `APROVADO`: veículo passa a `status = VENDIDO` e passa a aparecer na listagem de "vendidos"
    (`GET /veiculos/vendidos`). Se `CANCELADO`: veículo volta a `status = DISPONIVEL`.
 
+## Arquitetura interna de cada serviço (Hexagonal)
+
+Os dois serviços seguem Arquitetura Hexagonal (Ports & Adapters): Domain sem dependência de
+Spring/JPA/HTTP; Application conhecendo só Ports; Adapters isolando a tecnologia concreta
+(`adapter/in/web`, `adapter/in/scheduler`, `adapter/out/persistence`, `adapter/out/http`). No
+**software principal**, `Veiculo` e `EventoSincronizacao` (Outbox) são os agregados de Domain;
+Application (`CadastrarVeiculoService`, `EditarVeiculoService`, `SincronizacaoService`,
+`ReenviarEventosPendentesService`) só orquestra via `VeiculoRepositoryPort`,
+`SincronizacaoEventoPort`, `VendaVeiculosSyncPort` e `AuditoriaPort`. Ver detalhamento completo em
+[`lld.md`](./lld.md#diagrama-de-classes--software-principal). O **serviço de venda de veículos**
+segue o mesmo padrão arquitetural (ver `docs/hld.md`/`docs/lld.md` daquele repositório).
+
 ## Comunicação entre serviços
 
 Toda comunicação entre os dois serviços é feita via **requisições HTTP** (REST/JSON), nunca via
