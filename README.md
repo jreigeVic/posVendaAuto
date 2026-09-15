@@ -28,25 +28,36 @@ a cada cadastro/edição, este serviço propaga a mudança para o serviço de ve
 - [`docs/decisoes-pendentes.md`](docs/decisoes-pendentes.md) — decisões de projeto tomadas para
   preencher lacunas do enunciado, com a justificativa de cada uma.
 - [`openapi.yaml`](openapi.yaml) — especificação Swagger/OpenAPI desta API.
+- Swagger UI interativo: `GET /swagger-ui/index.html` (com a app rodando localmente), gerado a
+  partir dos controllers reais via springdoc.
 - [`postman/`](postman/) — coleção Postman para testar as rotas manualmente.
 
 ## Como foi implementado
 
 Spring Boot 4.1.1, Java 26, Gradle (Kotlin DSL), Spring Data JPA, PostgreSQL, Spring Security
 (endpoints de negócio) + token interno compartilhado (endpoint de sincronização com o serviço de
-venda), Spring Boot Actuator/Micrometer (observabilidade). Estado atual: em desenvolvimento — a
-modelagem e os contratos de API estão definidos e documentados em `docs/`; a implementação de
-código (entidades, controllers, persistência, job de sincronização, testes e pipeline de CI/CD)
-está em andamento.
+venda), Spring Boot Actuator/Micrometer (observabilidade), springdoc-openapi (Swagger UI). Segue
+**Arquitetura Hexagonal** (Ports & Adapters): Domain sem dependência de Spring/JPA/HTTP,
+Application conhecendo apenas Ports, Adapters isolando a tecnologia concreta — ver detalhamento em
+[`docs/lld.md`](docs/lld.md). Testes automatizados cobrindo Domain, Application e Adapters, com
+cobertura acima de 98% (mínimo exigido: 80%). CI/CD (build, testes, gate de cobertura e deploy
+automatizado em Pull Request/merge) validado de ponta a ponta via GitHub Actions.
 
 ## Estrutura do projeto
 
 ```
 src/main/java/com/soat/posvendaauto/
-├── veiculo/           # cadastro/edição de veículo (controller, service, repository, entidade)
-├── sincronizacao/      # outbox de eventos + job de reenvio para o serviço de venda
-├── auditoria/          # log de sucesso/erro das operações
-└── config/             # segurança, cliente HTTP do serviço de venda, etc.
+├── veiculo/
+│   ├── domain/          # Veiculo, EstadoConservacao — sem dependência de framework
+│   ├── application/     # Use Cases (CadastrarVeiculoService, EditarVeiculoService) e Ports
+│   └── adapter/         # in/web (controller) e out/persistence (JPA)
+├── sincronizacao/
+│   ├── domain/          # EventoSincronizacao (Outbox), StatusEvento, TipoEvento
+│   ├── application/     # Use Cases de sincronização/reenvio e Ports
+│   └── adapter/         # in/scheduler (job), out/http (cliente) e out/persistence (JPA)
+├── auditoria/           # AuditoriaPort + adapter de persistência do log de sucesso/erro
+├── web/                 # GlobalExceptionHandler (tratamento de erro transversal)
+└── config/              # segurança, cliente HTTP do serviço de venda, etc.
 docs/                    # arquitetura, HLD/LLD, modelagem, contratos de API, decisões
 openapi.yaml             # especificação Swagger/OpenAPI
 postman/                 # coleção Postman
@@ -55,8 +66,8 @@ k8s/                     # manifests Deployment + Service (deploy local via kind
 
 ## Como usar localmente
 
-Pré-requisitos: JDK 26 (ver `docs/decisoes-pendentes.md`, item 6, sobre o risco dessa versão no
-CI) e Docker (para o banco de dados via `compose.yaml`).
+Pré-requisitos: JDK 26 (disponibilidade em CI confirmada — ver `docs/decisoes-pendentes.md`, item
+6) e Docker (para o banco de dados via `compose.yaml`).
 
 ```bash
 ./gradlew bootRun
