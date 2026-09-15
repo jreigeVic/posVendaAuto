@@ -6,7 +6,9 @@
   },
   "variable": [
     { "key": "baseUrl", "value": "http://localhost:8080" },
-    { "key": "veiculoId", "value": "" }
+    { "key": "veiculoId", "value": "" },
+    { "key": "operadorUsuario", "value": "operador" },
+    { "key": "operadorSenha", "value": "changeit-local-dev" }
   ],
   "item": [
     {
@@ -14,6 +16,13 @@
       "request": {
         "method": "POST",
         "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "{{operadorUsuario}}" },
+            { "key": "password", "value": "{{operadorSenha}}" }
+          ]
+        },
         "url": "{{baseUrl}}/veiculos",
         "body": {
           "mode": "raw",
@@ -26,6 +35,13 @@
       "request": {
         "method": "PUT",
         "header": [ { "key": "Content-Type", "value": "application/json" } ],
+        "auth": {
+          "type": "basic",
+          "basic": [
+            { "key": "username", "value": "{{operadorUsuario}}" },
+            { "key": "password", "value": "{{operadorSenha}}" }
+          ]
+        },
         "url": "{{baseUrl}}/veiculos/{{veiculoId}}",
         "body": {
           "mode": "raw",
